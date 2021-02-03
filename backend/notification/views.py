@@ -1,17 +1,46 @@
-# import pyrebase
-#
-# config = {
-#     'apiKey': "AIzaSyDqDesb79-FWz7mMJnz07stjiC-3WiMiYE",
-#     'authDomain': "pushleopard.firebaseapp.com",
-#     'projectId': "pushleopard",
-#     'storageBucket': "pushleopard.appspot.com",
-#     'messagingSenderId': "1006554054487",
-#     'appId': "1:1006554054487:web:262ed1a4313f895f7d0812",
-#     'measurementId': "G-17NKGTNE86",
-#     'serviceAccount': "/home/suleman/PycharmProjects/FCM_Project/backend/pushleopard-firebase.json"
-# }
-#
-# firebase = pyrebase.initialize_app(config)
+import firebase_admin
+from firebase_admin import credentials
+
+from django.conf import settings
+
+from .models import FCM
+# from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 
 
-# Create your views here.
+cred = credentials.Certificate(settings.GOOGLE_APPLICATION_CREDENTIALS)
+app = firebase_admin.initialize_app(cred)
+
+
+@api_view(['POST'])
+def register_token(request):
+    token = request.data['token']
+    if token is not None:
+        FCM.objects.create(token=token)
+    else:
+        return "No token"
+
+
+@api_view(['GET', 'POST'])
+def subscribe(request):
+    registration_tokens = request.data['token']
+    # These registration tokens come from the client FCM SDKs.
+
+    # Subscribe the devices corresponding to the registration tokens to the
+    # topic.
+    response = app.messaging.subscribe_to_topic(registration_tokens, topic)
+    # See the TopicManagementResponse reference documentation
+    # for the contents of response.
+    print(response.success_count, 'tokens were subscribed successfully')
+
+
+@api_view(['GET', 'POST'])
+def unsubscribe(request):
+    registration_tokens = request.data['token']
+
+    # Unubscribe the devices corresponding to the registration tokens from the
+    # topic.
+    response = app.messaging.unsubscribe_from_topic(registration_tokens, topic)
+    # See the TopicManagementResponse reference documentation
+    # for the contents of response.
+    print(response.success_count, 'tokens were unsubscribed successfully')

@@ -31,7 +31,8 @@ class App extends React.Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+           ASKING FOR PERMISSION, GETTING TOKEN ON ALLOW, 
+           THROUGH FIREBASE COMPOSER GETTING NOTIFICATION 
           </p>
           <a
             className="App-link"
